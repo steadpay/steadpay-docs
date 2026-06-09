@@ -1,6 +1,6 @@
 ---
 title: "HMAC Verification"
-description: "Verify that webhook deliveries genuinely came from Steadpay."
+description: "Verify that webhook deliveries genuinely came from SteadPay."
 ---
 
 Every downstream webhook delivery includes an `X-Steadpay-Signature` header. Verify this signature before processing the payload to ensure the request is authentic and the body has not been tampered with.
@@ -15,7 +15,7 @@ The signature is `HMAC-SHA256` of the **raw request body**, keyed with your per-
 
 ## Getting your signing secret
 
-In the Steadpay dashboard, go to **Settings → Webhooks**. Your signing secret is displayed alongside your webhook URL.
+In the SteadPay dashboard, go to **Settings → Webhooks**. Your signing secret is displayed alongside your webhook URL.
 
 ## Verification example
 
@@ -95,4 +95,4 @@ func verifySignature(rawBody []byte, signatureHeader, secret string) bool {
 
 - **Use the raw body** — compute the HMAC over the raw request bytes before any JSON parsing. Parsing and re-serializing will change whitespace and may break the signature.
 - **Use a constant-time comparison** (`timingSafeEqual` / `hmac.compare_digest` / `hmac.Equal`) to prevent timing attacks.
-- **No timestamp in the signature** — Steadpay signs the body only, not a timestamp. Use `occurred_at` in the payload for event ordering if needed.
+- **No timestamp in the signature** — SteadPay signs the body only, not a timestamp. Use `occurred_at` in the payload for event ordering if needed.

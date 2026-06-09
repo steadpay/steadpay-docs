@@ -3,13 +3,13 @@ title: "Quickstart"
 description: "Go from zero to live enforcement in under 10 minutes."
 ---
 
-## 1. Create your Steadpay account
+## 1. Create your SteadPay account
 
 [Sign up at steadpayhq.com/signup](https://steadpayhq.com/signup). You'll connect your Stripe account via OAuth during signup.
 
 ## 2. Get your publishable key
 
-From the Steadpay dashboard, copy your **publishable key** (`pk_live_…`). This key is safe to embed in client-side code.
+From the SteadPay dashboard, copy your **publishable key** (`pk_live_…`). This key is safe to embed in client-side code.
 
 ## 3. Register your Stripe webhook
 
@@ -21,7 +21,7 @@ https://api.steadpayhq.com/webhooks/stripe
 
 Subscribe to the `invoice.payment_failed` and `invoice.payment_succeeded` events.
 
-Copy the **signing secret** (`whsec_…`) and paste it into the Steadpay dashboard under **Settings → Stripe**.
+Copy the **signing secret** (`whsec_…`) and paste it into the SteadPay dashboard under **Settings → Stripe**.
 
 ## 4. Add the enforcement snippet
 
@@ -44,7 +44,7 @@ The snippet runs immediately on page load, checks the subscriber's billing statu
 
 ## 5. Verify it works
 
-In your Steadpay dashboard, navigate to **Subscribers** and find your test subscriber. Use the **Force status** control to set them to `lockout` — reload the page in your app and confirm the gate overlay appears.
+In your SteadPay dashboard, navigate to **Subscribers** and find your test subscriber. Use the **Force status** control to set them to `lockout` — reload the page in your app and confirm the gate overlay appears.
 
 ---
 

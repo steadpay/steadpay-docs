@@ -22,11 +22,11 @@ On load, the snippet fetches the subscriber's billing status and renders the app
 
 | Attribute | Required | Description |
 |-----------|----------|-------------|
-| `data-tenant-slug` | ✓ | Your Steadpay tenant slug, visible in the dashboard |
-| `data-publishable-key` | ✓ | Your Steadpay publishable key (`pk_live_…` or `pk_test_…`) |
+| `data-tenant-slug` | ✓ | Your SteadPay tenant slug, visible in the dashboard |
+| `data-publishable-key` | ✓ | Your SteadPay publishable key (`pk_live_…` or `pk_test_…`) |
 | `data-customer-id` | | Stripe customer ID (`cus_…`) for auto-init. If omitted, call `window.Steadpay.check(cid)` manually |
-| `data-api-base` | | Base URL of your Steadpay API. Defaults to the Steadpay-hosted API |
-| `data-gate-base` | | Origin for the gate iframe. Defaults to `data-api-base`. Must be a Steadpay-controlled origin |
+| `data-api-base` | | Base URL of your SteadPay API. Defaults to the SteadPay-hosted API |
+| `data-gate-base` | | Origin for the gate iframe. Defaults to `data-api-base`. Must be a SteadPay-controlled origin |
 | `data-locale` | | UI locale — `en`, `fr`, `es`, `de`. Defaults to `navigator.language`, fallback `en` |
 
 ## Manual init (SPAs)

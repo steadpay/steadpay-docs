@@ -17,7 +17,7 @@ Returns the current billing enforcement status for a subscriber. This is the sam
 
 | Parameter | Description |
 |-----------|-------------|
-| `tenantSlug` | Your Steadpay tenant slug |
+| `tenantSlug` | Your SteadPay tenant slug |
 
 ### Query parameters
 
@@ -73,15 +73,15 @@ Authorization: Bearer pk_live_abc123
 | Status | Meaning |
 |--------|---------|
 | `401 Unauthorized` | Missing or invalid publishable key |
-| `402 Payment Required` | Tenant's Steadpay subscription is suspended |
+| `402 Payment Required` | Tenant's SteadPay subscription is suspended |
 | `404 Not Found` | Tenant slug not found |
 
 ## Unknown subscribers
 
-If Steadpay has not seen a given `stripe_customer_id` before (no failed payment on record), the response is:
+If SteadPay has not seen a given `stripe_customer_id` before (no failed payment on record), the response is:
 
 ```json
 { "status": "active" }
 ```
 
-Steadpay is **fail-open** — an unknown subscriber is treated as active so your app never blocks users due to missing data.
+SteadPay is **fail-open** — an unknown subscriber is treated as active so your app never blocks users due to missing data.

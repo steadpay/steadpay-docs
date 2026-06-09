@@ -9,13 +9,13 @@ description: "Receive real-time notifications when subscriber billing states cha
 
 ## What are downstream webhooks?
 
-When a subscriber's billing status changes — a payment fails, retries are exhausted, or a card is successfully updated — Steadpay can POST a signed event payload to a URL you configure. Use this to sync billing state into your own database, trigger internal workflows, or update CRM records.
+When a subscriber's billing status changes — a payment fails, retries are exhausted, or a card is successfully updated — SteadPay can POST a signed event payload to a URL you configure. Use this to sync billing state into your own database, trigger internal workflows, or update CRM records.
 
 ## Configuring your endpoint
 
-In the Steadpay dashboard, go to **Settings → Webhooks** and enter your endpoint URL. The URL must be HTTPS.
+In the SteadPay dashboard, go to **Settings → Webhooks** and enter your endpoint URL. The URL must be HTTPS.
 
-Steadpay will POST events to this URL as they occur.
+SteadPay will POST events to this URL as they occur.
 
 ## Event types
 
@@ -57,14 +57,14 @@ For `subscriber.hard_declined`, an additional `decline_code` field is included:
 |-------|------|-------------|
 | `event_id` | `string` (UUID) | Unique ID for this delivery. Use for deduplication |
 | `event` | `string` | Event type |
-| `subscriber_id` | `string` (UUID) | Steadpay's internal subscriber ID |
+| `subscriber_id` | `string` (UUID) | SteadPay's internal subscriber ID |
 | `tenant_slug` | `string` | Your tenant slug |
 | `occurred_at` | `string` (ISO 8601) | Timestamp of the event |
 | `decline_code` | `string` | _(hard_declined only)_ Stripe decline code |
 
 ## Retry schedule
 
-If your endpoint returns a non-2xx response or times out (5 second timeout), Steadpay retries:
+If your endpoint returns a non-2xx response or times out (5 second timeout), SteadPay retries:
 
 | Attempt | Delay |
 |---------|-------|
@@ -74,7 +74,7 @@ If your endpoint returns a non-2xx response or times out (5 second timeout), Ste
 
 ## Deduplication
 
-Always deduplicate on `event_id`. Steadpay guarantees at-least-once delivery — retries mean the same event can arrive more than once. Store processed `event_id` values and skip duplicates:
+Always deduplicate on `event_id`. SteadPay guarantees at-least-once delivery — retries mean the same event can arrive more than once. Store processed `event_id` values and skip duplicates:
 
 ```javascript
 // Example (Node.js / Express)

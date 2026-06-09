@@ -1,11 +1,11 @@
 ---
 title: "Introduction"
-description: "Steadpay keeps your recurring revenue steady by catching failed payments at the highest-intent moment — when your subscriber is already inside your app."
+description: "SteadPay keeps your recurring revenue steady by catching failed payments at the highest-intent moment — when your subscriber is already inside your app."
 ---
 
-## What is Steadpay?
+## What is SteadPay?
 
-Steadpay is a billing enforcement layer for Stripe-powered SaaS products. When a subscriber's payment fails, Steadpay intercepts their next login with a non-bypassable overlay that requires them to update their card before continuing.
+SteadPay is a billing enforcement layer for Stripe-powered SaaS products. When a subscriber's payment fails, SteadPay intercepts their next login with a non-bypassable overlay that requires them to update their card before continuing.
 
 No emails. No grace periods. No revenue leakage.
 
@@ -13,12 +13,12 @@ No emails. No grace periods. No revenue leakage.
 
 <Steps>
   <Step title="Stripe sends a webhook">
-    When a payment fails, Stripe fires an `invoice.payment_failed` event to Steadpay. Steadpay classifies it as a **soft decline** (retriable) or **hard decline** (card rejected outright) and updates the subscriber's status accordingly.
+    When a payment fails, Stripe fires an `invoice.payment_failed` event to SteadPay. SteadPay classifies it as a **soft decline** (retriable) or **hard decline** (card rejected outright) and updates the subscriber's status accordingly.
   </Step>
   <Step title="Your app checks the subscriber's status">
-    On every authenticated session, your enforcement snippet (or mobile SDK) calls the Steadpay status API with the subscriber's Stripe customer ID.
+    On every authenticated session, your enforcement snippet (or mobile SDK) calls the SteadPay status API with the subscriber's Stripe customer ID.
   </Step>
-  <Step title="Steadpay enforces the gate">
+  <Step title="SteadPay enforces the gate">
     - **Active** — nothing shown, subscriber continues normally.
     - **Warning** — a dismissable banner prompts the subscriber to update their card.
     - **Lockout** — a full-screen overlay prevents all app access until the card is updated.
@@ -30,7 +30,7 @@ No emails. No grace periods. No revenue leakage.
 
 ## Enforcement surfaces
 
-Steadpay provides four ways to integrate — pick the one that matches your stack:
+SteadPay provides four ways to integrate — pick the one that matches your stack:
 
 | Surface | Best for |
 |---------|----------|
@@ -43,5 +43,5 @@ Steadpay provides four ways to integrate — pick the one that matches your stac
 ## Prerequisites
 
 - A Stripe account in live mode
-- Steadpay account ([sign up here](https://steadpayhq.com/signup))
+- SteadPay account ([sign up here](https://steadpayhq.com/signup))
 - Your subscriber's `stripe_customer_id` available at login time

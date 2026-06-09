@@ -5,17 +5,17 @@ description: "Monitor subscriber billing states, retry history, and webhook deli
 
 ## Accessing the dashboard
 
-Log in at [steadpayhq.com/dashboard](https://steadpayhq.com/dashboard) with your Steadpay account credentials.
+Log in at [steadpayhq.com/dashboard](https://steadpayhq.com/dashboard) with your SteadPay account credentials.
 
 ## Subscribers
 
-The **Subscribers** tab shows all subscribers Steadpay has seen across your Stripe account.
+The **Subscribers** tab shows all subscribers SteadPay has seen across your Stripe account.
 
 | Column | Description |
 |--------|-------------|
 | Stripe Customer ID | The `cus_…` identifier from Stripe |
 | Status | Current enforcement status: `active`, `warning`, or `lockout` |
-| Last seen | When Steadpay last received a webhook for this subscriber |
+| Last seen | When SteadPay last received a webhook for this subscriber |
 
 ### Subscriber statuses
 
@@ -59,4 +59,4 @@ Under **Settings → Webhooks** (Scale tier):
 
 ## Stripe connection
 
-Under **Settings → Stripe**, verify that your Stripe account is connected and your webhook signing secret is up to date. If the signing secret is incorrect, Steadpay will reject incoming Stripe webhook events.
+Under **Settings → Stripe**, verify that your Stripe account is connected and your webhook signing secret is up to date. If the signing secret is incorrect, SteadPay will reject incoming Stripe webhook events.

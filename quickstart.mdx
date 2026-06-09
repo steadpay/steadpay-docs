@@ -1,0 +1,58 @@
+---
+title: "Quickstart"
+description: "Go from zero to live enforcement in under 10 minutes."
+---
+
+## 1. Create your Steadpay account
+
+[Sign up at steadpayhq.com/signup](https://steadpayhq.com/signup). You'll connect your Stripe account via OAuth during signup.
+
+## 2. Get your publishable key
+
+From the Steadpay dashboard, copy your **publishable key** (`pk_live_…`). This key is safe to embed in client-side code.
+
+## 3. Register your Stripe webhook
+
+In your Stripe dashboard, create a webhook endpoint pointing to:
+
+```
+https://api.steadpayhq.com/webhooks/stripe
+```
+
+Subscribe to the `invoice.payment_failed` and `invoice.payment_succeeded` events.
+
+Copy the **signing secret** (`whsec_…`) and paste it into the Steadpay dashboard under **Settings → Stripe**.
+
+## 4. Add the enforcement snippet
+
+Paste this into every authenticated page of your web app, replacing the placeholder values:
+
+```html
+<script
+  src="https://api.steadpayhq.com/v1/enforce.js"
+  data-tenant-slug="YOUR_TENANT_SLUG"
+  data-publishable-key="pk_live_YOUR_KEY"
+  data-customer-id="cus_SUBSCRIBER_STRIPE_ID"
+></script>
+```
+
+<Note>
+  `data-customer-id` is the currently signed-in subscriber's Stripe customer ID. Render it server-side as part of your HTML.
+</Note>
+
+The snippet runs immediately on page load, checks the subscriber's billing status, and shows the appropriate UI automatically.
+
+## 5. Verify it works
+
+In your Steadpay dashboard, navigate to **Subscribers** and find your test subscriber. Use the **Force status** control to set them to `lockout` — reload the page in your app and confirm the gate overlay appears.
+
+---
+
+## Mobile apps
+
+If you're integrating into a mobile app rather than a web app, skip step 4 and follow the relevant SDK guide instead:
+
+- [React Native](/sdks/react-native)
+- [Flutter](/sdks/flutter)
+- [Swift (iOS)](/sdks/swift)
+- [Android](/sdks/android)

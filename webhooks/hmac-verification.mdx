@@ -1,0 +1,98 @@
+---
+title: "HMAC Verification"
+description: "Verify that webhook deliveries genuinely came from Steadpay."
+---
+
+Every downstream webhook delivery includes an `X-Steadpay-Signature` header. Verify this signature before processing the payload to ensure the request is authentic and the body has not been tampered with.
+
+## Signature format
+
+```
+X-Steadpay-Signature: sha256=<hex-encoded-hmac>
+```
+
+The signature is `HMAC-SHA256` of the **raw request body**, keyed with your per-tenant webhook signing secret.
+
+## Getting your signing secret
+
+In the Steadpay dashboard, go to **Settings → Webhooks**. Your signing secret is displayed alongside your webhook URL.
+
+## Verification example
+
+<CodeGroup>
+
+```javascript Node.js
+const crypto = require('crypto')
+
+function verifySignature(rawBody, signatureHeader, secret) {
+  const expected = 'sha256=' + crypto
+    .createHmac('sha256', secret)
+    .update(rawBody)
+    .digest('hex')
+
+  return crypto.timingSafeEqual(
+    Buffer.from(signatureHeader),
+    Buffer.from(expected)
+  )
+}
+
+// Express — use express.raw() to preserve the raw body
+app.post('/webhooks/steadpay', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['x-steadpay-signature']
+  if (!verifySignature(req.body, sig, process.env.STEADPAY_WEBHOOK_SECRET)) {
+    return res.status(400).send('Invalid signature')
+  }
+
+  const payload = JSON.parse(req.body)
+  // process payload...
+  res.sendStatus(200)
+})
+```
+
+```python Python
+import hmac
+import hashlib
+
+def verify_signature(raw_body: bytes, signature_header: str, secret: str) -> bool:
+    expected = 'sha256=' + hmac.new(
+        secret.encode(),
+        raw_body,
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(signature_header, expected)
+
+# Flask example
+@app.route('/webhooks/steadpay', methods=['POST'])
+def steadpay_webhook():
+    sig = request.headers.get('X-Steadpay-Signature', '')
+    if not verify_signature(request.data, sig, os.environ['STEADPAY_WEBHOOK_SECRET']):
+        return 'Invalid signature', 400
+
+    payload = request.get_json()
+    # process payload...
+    return '', 200
+```
+
+```go Go
+import (
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/hex"
+    "fmt"
+)
+
+func verifySignature(rawBody []byte, signatureHeader, secret string) bool {
+    mac := hmac.New(sha256.New, []byte(secret))
+    mac.Write(rawBody)
+    expected := "sha256=" + hex.EncodeToString(mac.Sum(nil))
+    return hmac.Equal([]byte(signatureHeader), []byte(expected))
+}
+```
+
+</CodeGroup>
+
+## Important notes
+
+- **Use the raw body** — compute the HMAC over the raw request bytes before any JSON parsing. Parsing and re-serializing will change whitespace and may break the signature.
+- **Use a constant-time comparison** (`timingSafeEqual` / `hmac.compare_digest` / `hmac.Equal`) to prevent timing attacks.
+- **No timestamp in the signature** — Steadpay signs the body only, not a timestamp. Use `occurred_at` in the payload for event ordering if needed.

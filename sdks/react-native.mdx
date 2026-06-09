@@ -1,0 +1,183 @@
+---
+title: "React Native"
+description: "Native billing enforcement for React Native apps — no WebView, no native module linking."
+---
+
+## Installation
+
+```sh
+npm install steadpay-react-native
+```
+
+No native module linking required. The package uses only React Native core components and the built-in `fetch` API.
+
+## Quick start
+
+Wrap the authenticated portion of your app in `<SteadpayGate>`:
+
+```tsx
+import { SteadpayGate } from 'steadpay-react-native'
+
+export function App() {
+  return (
+    <SteadpayGate
+      apiBase="https://api.steadpayhq.com"
+      tenantSlug="acme"
+      customerId={currentUser.stripeCustomerId}
+      publishableKey="pk_live_abc123"
+    >
+      <YourApp />
+    </SteadpayGate>
+  )
+}
+```
+
+- **Active** — `<YourApp />` renders normally
+- **Warning** — a dismissable banner appears above content
+- **Lockout** — a full-screen overlay replaces all content until card is updated
+
+## `<SteadpayGate>` props
+
+```typescript
+interface SteadpayGateProps {
+  // Required
+  apiBase: string
+  tenantSlug: string
+  customerId: string        // Stripe customer ID (cus_…)
+  publishableKey: string    // Steadpay publishable key
+
+  // Optional
+  pollInterval?: number     // ms, default 600_000 (10 min), minimum 60_000
+
+  // Lifecycle callbacks — fire on transitions, not every poll tick
+  onLockout?: (customerId: string) => void
+  onWarning?: (customerId: string) => void
+  onActive?: (customerId: string) => void
+  onRecovered?: (customerId: string) => void
+  onError?: (error: Error) => void
+
+  // UI overrides
+  lockoutScreen?: React.ReactNode
+  warningBanner?: React.ReactNode
+
+  children: React.ReactNode
+}
+```
+
+### Render behaviour
+
+| Status | Children | Overlay |
+|--------|----------|---------|
+| `loading` | Yes | None |
+| `active` | Yes | None |
+| `warning` | Yes | Warning banner (top) |
+| `lockout` | No | Full-screen lockout |
+| `error` | Yes | None (fail-open) |
+
+## `useSteadpay` hook
+
+Use the hook directly for custom UI or state management:
+
+```tsx
+import { useSteadpay } from 'steadpay-react-native'
+
+function MyScreen() {
+  const { status, cardUpdateUrl, triggerCardUpdate, dismissWarning } = useSteadpay({
+    apiBase: 'https://api.steadpayhq.com',
+    tenantSlug: 'acme',
+    customerId: currentUser.stripeCustomerId,
+    publishableKey: 'pk_live_abc123',
+  })
+
+  if (status === 'lockout') {
+    return (
+      <View>
+        <Text>Payment method needs updating.</Text>
+        <Pressable onPress={triggerCardUpdate}>
+          <Text>Update now</Text>
+        </Pressable>
+      </View>
+    )
+  }
+
+  return <YourContent />
+}
+```
+
+<Note>
+  Always use `triggerCardUpdate()` rather than calling `Linking.openURL(cardUpdateUrl)` directly. Bypassing it means `onRecovered` will never fire — the next poll returning `active` fires `onActive` instead.
+</Note>
+
+### Config stability
+
+Every config change triggers a full reset. Pass a stable object or memoize:
+
+```tsx
+const config = useMemo(() => ({
+  apiBase: 'https://api.steadpayhq.com',
+  tenantSlug: 'acme',
+  customerId: user.stripeCustomerId,
+  publishableKey: 'pk_live_abc123',
+}), [user.stripeCustomerId])
+
+const state = useSteadpay(config)
+```
+
+## Callbacks
+
+| Callback | Fires when |
+|----------|-----------|
+| `onLockout` | Status transitions **to** `lockout` (including first load) |
+| `onWarning` | Status transitions **to** `warning` from a non-null state |
+| `onActive` | Status transitions **to** `active` via polling |
+| `onRecovered` | Subscriber completes the card update flow |
+| `onError` | Network failure or 401/404 |
+
+## Testing
+
+### Force a state
+
+```tsx
+<SteadpayGate {...config} forcedStatus="lockout">
+  <App />
+</SteadpayGate>
+```
+
+No network calls are made when `forcedStatus` is set. Remove before shipping.
+
+### Interactive sandbox
+
+`<SteadpaySandbox>` lets you switch states without a real Steadpay account:
+
+```tsx
+import { SteadpaySandbox } from 'steadpay-react-native'
+
+export function DevScreen() {
+  return (
+    <SteadpaySandbox
+      onLockout={(id) => console.log('locked out:', id)}
+      onWarning={(id) => console.log('warning:', id)}
+      onActive={(id) => console.log('active:', id)}
+    >
+      <YourApp />
+    </SteadpaySandbox>
+  )
+}
+```
+
+A `DEV` badge appears in the bottom-right corner. Tap it to open a control sheet with state pills and a callback log.
+
+Remove `<SteadpaySandbox>` before shipping to production.
+
+## TypeScript
+
+All types are exported from the package root:
+
+```typescript
+import type {
+  SteadpayConfig,
+  SteadpayState,
+  SteadpayStatus,
+  SteadpayGateProps,
+} from 'steadpay-react-native'
+```

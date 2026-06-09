@@ -1,0 +1,87 @@
+---
+title: "Subscriber Status"
+description: "Look up the billing enforcement status for a subscriber."
+---
+
+## Endpoint
+
+```
+GET /api/subscriber-status/:tenantSlug
+```
+
+Returns the current billing enforcement status for a subscriber. This is the same endpoint called by the enforcement snippet and all mobile SDKs.
+
+## Request
+
+### Path parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `tenantSlug` | Your Steadpay tenant slug |
+
+### Query parameters
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `stripe_customer_id` | ✓ | The subscriber's Stripe customer ID (`cus_…`) |
+
+### Headers
+
+| Header | Value |
+|--------|-------|
+| `Authorization` | `Bearer <publishableKey>` |
+
+### Example
+
+```http
+GET /api/subscriber-status/acme?stripe_customer_id=cus_xxxxxxxxxxxxxxxx
+Authorization: Bearer pk_live_abc123
+```
+
+## Response
+
+```json
+{
+  "status": "warning",
+  "card_update_url": "https://steadpayhq.com/update-card?tenant=acme&token=xxx",
+  "entitlements": {
+    "powered_by_watermark": true,
+    "custom_domain": false,
+    "downstream_webhooks": false
+  }
+}
+```
+
+### Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"active" \| "warning" \| "lockout"` | Current billing enforcement status |
+| `card_update_url` | `string \| null` | URL to the card update page. Present when `status` is `"warning"` and a card update URL is configured |
+| `entitlements` | `object` | Capability flags for the subscriber's tenant tier |
+
+### Status values
+
+| Status | Meaning |
+|--------|---------|
+| `active` | Payment is current — no enforcement shown |
+| `warning` | Soft decline — show dismissable banner nudging card update |
+| `lockout` | Hard decline or exhausted retries — show full-screen gate |
+
+## Error responses
+
+| Status | Meaning |
+|--------|---------|
+| `401 Unauthorized` | Missing or invalid publishable key |
+| `402 Payment Required` | Tenant's Steadpay subscription is suspended |
+| `404 Not Found` | Tenant slug not found |
+
+## Unknown subscribers
+
+If Steadpay has not seen a given `stripe_customer_id` before (no failed payment on record), the response is:
+
+```json
+{ "status": "active" }
+```
+
+Steadpay is **fail-open** — an unknown subscriber is treated as active so your app never blocks users due to missing data.

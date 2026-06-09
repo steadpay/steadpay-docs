@@ -1,0 +1,83 @@
+---
+title: "Snippet Events"
+description: "Listen to billing state transitions in your web app using CustomEvents."
+---
+
+The snippet dispatches `CustomEvent`s on `document` whenever the subscriber's billing status changes. Use these to trigger analytics, update your own UI, or log conversion events.
+
+## Event reference
+
+All events are dispatched on `document` (not `window`).
+
+### `steadpay:lockout`
+
+Fires when the subscriber transitions **to** `lockout` from any prior state. Also fires on first load if the subscriber is already in lockout (`null → lockout`).
+
+```javascript
+document.addEventListener('steadpay:lockout', (event) => {
+  console.log(event.detail)
+  // { customerId: 'cus_xxx', status: 'lockout' }
+})
+```
+
+### `steadpay:warning`
+
+Fires when the subscriber transitions **to** `warning` from a non-null prior state. Suppressed on initial page load (`null → warning` does not fire).
+
+```javascript
+document.addEventListener('steadpay:warning', (event) => {
+  console.log(event.detail)
+  // { customerId: 'cus_xxx', status: 'warning', card_update_url: 'https://...' }
+})
+```
+
+### `steadpay:active`
+
+Fires when the subscriber transitions **to** `active` from a non-null prior state. Suppressed on initial page load (`null → active` does not fire).
+
+```javascript
+document.addEventListener('steadpay:active', (event) => {
+  console.log(event.detail)
+  // { customerId: 'cus_xxx', status: 'active' }
+})
+```
+
+### `steadpay:recovered`
+
+Fires when a subscriber in lockout completes the card update flow inside the gate overlay. This is distinct from `steadpay:active` and represents a **conversion event** — the subscriber upgraded their payment method in-session.
+
+```javascript
+document.addEventListener('steadpay:recovered', (event) => {
+  console.log(event.detail)
+  // { customerId: 'cus_xxx', status: 'active' }
+
+  // Good place to track a conversion:
+  analytics.track('billing_recovered', { customerId: event.detail.customerId })
+})
+```
+
+## Transition rules
+
+Events fire on **status transitions only** — not on every poll tick when the status is unchanged.
+
+| Transition | Event fired |
+|-----------|-------------|
+| `null → lockout` (first load) | `steadpay:lockout` |
+| `null → warning` (first load) | _(suppressed)_ |
+| `null → active` (first load) | _(suppressed)_ |
+| `active → warning` | `steadpay:warning` |
+| `active → lockout` | `steadpay:lockout` |
+| `warning → lockout` | `steadpay:lockout` |
+| `lockout → active` (via polling) | `steadpay:active` |
+| `warning → active` (via polling) | `steadpay:active` |
+| card update completed in gate | `steadpay:recovered` |
+| status unchanged between polls | _(nothing)_ |
+
+## `steadpay:active` vs `steadpay:recovered`
+
+Both events signal that the subscriber is now active. The difference:
+
+- `steadpay:active` — the server resolved the issue (e.g. a retry succeeded or an operator reinstated the subscriber)
+- `steadpay:recovered` — the subscriber **completed the card update flow** in the current session
+
+Use `steadpay:recovered` to attribute revenue recovery to the enforcement gate.

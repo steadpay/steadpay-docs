@@ -1,0 +1,47 @@
+---
+title: "Introduction"
+description: "Steadpay keeps your recurring revenue steady by catching failed payments at the highest-intent moment — when your subscriber is already inside your app."
+---
+
+## What is Steadpay?
+
+Steadpay is a billing enforcement layer for Stripe-powered SaaS products. When a subscriber's payment fails, Steadpay intercepts their next login with a non-bypassable overlay that requires them to update their card before continuing.
+
+No emails. No grace periods. No revenue leakage.
+
+## How it works
+
+<Steps>
+  <Step title="Stripe sends a webhook">
+    When a payment fails, Stripe fires an `invoice.payment_failed` event to Steadpay. Steadpay classifies it as a **soft decline** (retriable) or **hard decline** (card rejected outright) and updates the subscriber's status accordingly.
+  </Step>
+  <Step title="Your app checks the subscriber's status">
+    On every authenticated session, your enforcement snippet (or mobile SDK) calls the Steadpay status API with the subscriber's Stripe customer ID.
+  </Step>
+  <Step title="Steadpay enforces the gate">
+    - **Active** — nothing shown, subscriber continues normally.
+    - **Warning** — a dismissable banner prompts the subscriber to update their card.
+    - **Lockout** — a full-screen overlay prevents all app access until the card is updated.
+  </Step>
+  <Step title="Subscriber updates their card">
+    The overlay loads a Stripe-hosted Payment Element directly. Once the card is updated successfully, the gate dismisses and the session resumes.
+  </Step>
+</Steps>
+
+## Enforcement surfaces
+
+Steadpay provides four ways to integrate — pick the one that matches your stack:
+
+| Surface | Best for |
+|---------|----------|
+| [JS snippet](/snippet/overview) | Web apps — add one `<script>` tag |
+| [React Native SDK](/sdks/react-native) | React Native apps |
+| [Flutter SDK](/sdks/flutter) | Flutter apps |
+| [Swift SDK](/sdks/swift) | iOS / macOS (SwiftUI or UIKit) |
+| [Android SDK](/sdks/android) | Android (Jetpack Compose) |
+
+## Prerequisites
+
+- A Stripe account in live mode
+- Steadpay account ([sign up here](https://steadpayhq.com/signup))
+- Your subscriber's `stripe_customer_id` available at login time

@@ -1,0 +1,167 @@
+---
+title: "Swift (iOS / macOS)"
+description: "Native billing enforcement for SwiftUI apps — supports iOS 15+ and macOS 13+."
+---
+
+## Installation
+
+### Swift Package Manager
+
+In Xcode: **File → Add Packages**, then enter:
+
+```
+https://github.com/steadpay/steadpay-swift
+```
+
+Or in `Package.swift`:
+
+```swift
+.package(url: "https://github.com/steadpay/steadpay-swift.git", from: "1.0.0")
+```
+
+Add `SteadpayUI` as a target dependency (and optionally `Steadpay` for direct client usage):
+
+```swift
+.target(
+    name: "YourApp",
+    dependencies: [
+        .product(name: "SteadpayUI", package: "steadpay-swift"),
+    ]
+)
+```
+
+## Quick start
+
+Wrap the authenticated portion of your app in `SteadpayGate`:
+
+```swift
+import SteadpayUI
+
+SteadpayGate(
+    tenantSlug: "acme",
+    customerId: currentUser.stripeCustomerId,
+    publishableKey: "pk_live_abc123",
+    apiBase: "https://api.steadpayhq.com"
+) {
+    YourApp()
+}
+```
+
+- **Active** — `YourApp` renders normally
+- **Warning** — dismissable banner above content
+- **Lockout** — full-screen overlay until card is updated
+
+## Parameters
+
+| Parameter | Type | Required | Default |
+|-----------|------|----------|---------|
+| `tenantSlug` | `String` | ✓ | — |
+| `customerId` | `String` | ✓ | — |
+| `publishableKey` | `String` | ✓ | — |
+| `apiBase` | `String` | ✓ | — |
+| `pollInterval` | `TimeInterval` | | `600` |
+| `forcedStatus` | `SteadpayStatus?` | | `nil` |
+| `callbacks` | `SteadpayCallbacks?` | | `nil` |
+| `lockoutScreen` | `((@escaping () -> Void, Entitlements?) -> AnyView)?` | | built-in |
+| `warningBanner` | `((@escaping () -> Void, @escaping () -> Void) -> AnyView)?` | | built-in |
+| `content` | `@ViewBuilder` | ✓ | — |
+
+## Callbacks
+
+```swift
+SteadpayGate(
+    tenantSlug: "acme",
+    customerId: currentUser.stripeCustomerId,
+    publishableKey: "pk_live_abc123",
+    apiBase: "https://api.steadpayhq.com",
+    callbacks: SteadpayCallbacks(
+        onLockout: { print("locked out") },
+        onWarning: { print("warning") },
+        onActive: { print("active") },
+        onRecovered: { print("recovered") },
+        onError: { err in print("error: \(err)") }
+    )
+) {
+    YourApp()
+}
+```
+
+Callbacks fire on status **transitions only**.
+
+## Custom enforcement UI
+
+Wrap your views in `AnyView(...)`:
+
+```swift
+SteadpayGate(
+    // ...
+    lockoutScreen: { triggerCardUpdate, _ in
+        AnyView(MyBrandedLockout(onUpdate: triggerCardUpdate))
+    },
+    warningBanner: { triggerCardUpdate, dismissWarning in
+        AnyView(MyBrandedBanner(onUpdate: triggerCardUpdate, onDismiss: dismissWarning))
+    }
+) {
+    YourApp()
+}
+```
+
+## Testing
+
+### Force a state
+
+```swift
+SteadpayGate(
+    tenantSlug: "acme",
+    customerId: "cus_test",
+    publishableKey: "pk_test_abc",
+    apiBase: "https://api.steadpayhq.com",
+    forcedStatus: .lockout
+) {
+    YourApp()
+}
+```
+
+No network calls are made when `forcedStatus` is set. Remove before shipping.
+
+### Interactive sandbox
+
+```swift
+import SteadpayUI
+
+SteadpaySandbox(
+    onLockout: { print("locked out") },
+    onWarning: { print("warning") },
+    onActive: { print("active") },
+    onError: { err in print("error: \(err)") }
+) {
+    YourApp()
+}
+```
+
+A `DEV` badge appears in the bottom-right corner. Tap to open a sheet with state pills and a callback log. Remove before shipping to production.
+
+## UIKit / non-SwiftUI usage
+
+Use the `Steadpay` target directly with Combine:
+
+```swift
+import Steadpay
+
+let client = SteadpayClient(
+    config: SteadpayConfig(
+        apiBase: "https://api.steadpayhq.com",
+        tenantSlug: "acme",
+        customerId: currentUser.stripeCustomerId,
+        publishableKey: "pk_live_abc123"
+    )
+)
+client.start()
+
+client.$status
+    .receive(on: DispatchQueue.main)
+    .sink { status in /* update UI */ }
+    .store(in: &cancellables)
+```
+
+Call `client.stop()` in `deinit` or `viewDidDisappear`.

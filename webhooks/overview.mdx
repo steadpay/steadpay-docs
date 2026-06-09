@@ -1,0 +1,96 @@
+---
+title: "Webhooks Overview"
+description: "Receive real-time notifications when subscriber billing states change."
+---
+
+<Note>
+  Downstream webhooks are available on the **Scale tier** only.
+</Note>
+
+## What are downstream webhooks?
+
+When a subscriber's billing status changes — a payment fails, retries are exhausted, or a card is successfully updated — Steadpay can POST a signed event payload to a URL you configure. Use this to sync billing state into your own database, trigger internal workflows, or update CRM records.
+
+## Configuring your endpoint
+
+In the Steadpay dashboard, go to **Settings → Webhooks** and enter your endpoint URL. The URL must be HTTPS.
+
+Steadpay will POST events to this URL as they occur.
+
+## Event types
+
+| Event | Fires when |
+|-------|-----------|
+| `subscriber.warning` | A soft decline is received — subscriber enters warning state |
+| `subscriber.lockout` | Retries exhausted — subscriber is locked out |
+| `subscriber.reinstated` | Subscriber's card update succeeds — back to active |
+| `subscriber.hard_declined` | A hard decline is received (card rejected, do not retry) |
+
+## Payload shape
+
+```json
+{
+  "event_id": "550e8400-e29b-41d4-a716-446655440000",
+  "event": "subscriber.lockout",
+  "subscriber_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "tenant_slug": "acme",
+  "occurred_at": "2026-06-10T14:32:00.000Z"
+}
+```
+
+For `subscriber.hard_declined`, an additional `decline_code` field is included:
+
+```json
+{
+  "event_id": "...",
+  "event": "subscriber.hard_declined",
+  "subscriber_id": "...",
+  "tenant_slug": "acme",
+  "occurred_at": "2026-06-10T14:32:00.000Z",
+  "decline_code": "card_declined"
+}
+```
+
+### Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event_id` | `string` (UUID) | Unique ID for this delivery. Use for deduplication |
+| `event` | `string` | Event type |
+| `subscriber_id` | `string` (UUID) | Steadpay's internal subscriber ID |
+| `tenant_slug` | `string` | Your tenant slug |
+| `occurred_at` | `string` (ISO 8601) | Timestamp of the event |
+| `decline_code` | `string` | _(hard_declined only)_ Stripe decline code |
+
+## Retry schedule
+
+If your endpoint returns a non-2xx response or times out (5 second timeout), Steadpay retries:
+
+| Attempt | Delay |
+|---------|-------|
+| 1st retry | T + 1 minute |
+| 2nd retry | T + 5 minutes |
+| Exhausted | Marked as failed, no further retries |
+
+## Deduplication
+
+Always deduplicate on `event_id`. Steadpay guarantees at-least-once delivery — retries mean the same event can arrive more than once. Store processed `event_id` values and skip duplicates:
+
+```javascript
+// Example (Node.js / Express)
+app.post('/webhooks/steadpay', async (req, res) => {
+  const { event_id, event, subscriber_id } = req.body
+
+  const already = await db.processedEvents.findUnique({ where: { event_id } })
+  if (already) return res.sendStatus(200)  // ack duplicate, skip processing
+
+  await db.processedEvents.create({ data: { event_id } })
+  await handleEvent(event, subscriber_id)
+
+  res.sendStatus(200)
+})
+```
+
+## Signature verification
+
+All webhook deliveries are signed. See [HMAC Verification](/webhooks/hmac-verification).

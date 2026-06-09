@@ -1,0 +1,31 @@
+---
+title: "Authentication"
+description: "How to authenticate requests to the Steadpay API."
+---
+
+## Publishable key
+
+The Steadpay status API uses a **publishable key** for authentication. Publishable keys are safe to embed in client-side code (web pages, mobile apps) and are scoped to read-only status lookups for a single tenant.
+
+Publishable keys follow the format `pk_live_…` (production) or `pk_test_…` (test mode).
+
+You can find your publishable key in the Steadpay dashboard under **Settings → API Keys**.
+
+## Usage
+
+Pass the publishable key as a Bearer token in the `Authorization` header:
+
+```http
+GET /api/subscriber-status/acme?stripe_customer_id=cus_xxx
+Authorization: Bearer pk_live_abc123
+```
+
+## Key rotation
+
+You can rotate your publishable key at any time from the dashboard (**Settings → API Keys → Rotate**). The previous key is invalidated immediately.
+
+<Warning>
+  After rotating, update the key in all enforcement snippets and SDKs. The old key will return `401 Unauthorized` immediately.
+</Warning>
+
+Bootstrap-tier accounts use an **atomic swap** — the new key is issued in a single operation with no gap between old and new.

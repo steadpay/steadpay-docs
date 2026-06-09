@@ -1,0 +1,162 @@
+---
+title: "Android"
+description: "Native billing enforcement for Android apps using Jetpack Compose — minimum API 26 (Android 8.0)."
+---
+
+## Installation
+
+Add the Steadpay Android SDK via a local composite build or published artifact:
+
+```kotlin
+// settings.gradle.kts
+includeBuild("path/to/steadpay-android") {
+    dependencySubstitution {
+        substitute(module("io.steadpay:compose")).using(project(":compose"))
+        substitute(module("io.steadpay:core")).using(project(":core"))
+    }
+}
+
+// app/build.gradle.kts
+dependencies {
+    implementation("io.steadpay:compose")
+}
+```
+
+## Quick start
+
+Wrap the authenticated portion of your app in `SteadpayGate`:
+
+```kotlin
+import io.steadpay.compose.SteadpayGate
+
+SteadpayGate(
+    tenantSlug = "acme",
+    customerId = currentUser.stripeCustomerId,
+    publishableKey = "pk_live_abc123",
+    apiBase = "https://api.steadpayhq.com",
+) {
+    YourApp()
+}
+```
+
+- **Active** — `YourApp` renders normally
+- **Warning** — dismissable banner above content
+- **Lockout** — full-screen overlay until card is updated
+
+## Parameters
+
+| Parameter | Type | Required | Default |
+|-----------|------|----------|---------|
+| `tenantSlug` | `String` | ✓ | — |
+| `customerId` | `String` | ✓ | — |
+| `publishableKey` | `String` | ✓ | — |
+| `apiBase` | `String` | ✓ | — |
+| `pollIntervalMs` | `Long` | | `600_000` |
+| `forcedStatus` | `SteadpayStatus?` | | `null` |
+| `callbacks` | `SteadpayCallbacks?` | | `null` |
+| `lockoutScreen` | `@Composable (...)` | | built-in |
+| `warningBanner` | `@Composable (...)` | | built-in |
+| `content` | `@Composable () -> Unit` | ✓ | — |
+
+## Callbacks
+
+```kotlin
+SteadpayGate(
+    tenantSlug = "acme",
+    customerId = currentUser.stripeCustomerId,
+    publishableKey = "pk_live_abc123",
+    apiBase = "https://api.steadpayhq.com",
+    callbacks = SteadpayCallbacks(
+        onLockout = { println("locked out") },
+        onWarning = { println("warning") },
+        onActive = { println("active") },
+        onRecovered = { println("recovered") },
+        onError = { err -> println("error: $err") },
+    ),
+) {
+    YourApp()
+}
+```
+
+Callbacks fire on status **transitions only**.
+
+## Custom enforcement UI
+
+```kotlin
+SteadpayGate(
+    // ...
+    lockoutScreen = { triggerCardUpdate, _ ->
+        MyBrandedLockout(onUpdate = triggerCardUpdate)
+    },
+    warningBanner = { triggerCardUpdate, dismissWarning ->
+        MyBrandedBanner(onUpdate = triggerCardUpdate, onDismiss = dismissWarning)
+    },
+) {
+    YourApp()
+}
+```
+
+## Testing
+
+### Force a state
+
+```kotlin
+SteadpayGate(
+    tenantSlug = "acme",
+    customerId = "cus_test",
+    publishableKey = "pk_test_abc",
+    apiBase = "https://api.steadpayhq.com",
+    forcedStatus = SteadpayStatus.Lockout,
+) {
+    YourApp()
+}
+```
+
+No network calls are made when `forcedStatus` is set. Remove before shipping.
+
+### Interactive sandbox
+
+```kotlin
+import io.steadpay.compose.SteadpaySandbox
+
+SteadpaySandbox(
+    onLockout = { println("locked out") },
+    onWarning = { println("warning") },
+    onActive = { println("active") },
+    onError = { err -> println("error: $err") },
+) {
+    YourApp()
+}
+```
+
+A `DEV` badge appears in the bottom-right corner. Tap to open a bottom sheet with state pills and a callback log. Remove before shipping to production.
+
+## Direct controller usage
+
+For custom state management outside Compose:
+
+```kotlin
+val controller = SteadpayController(
+    config = SteadpayConfig(
+        apiBase = "https://api.steadpayhq.com",
+        tenantSlug = "acme",
+        customerId = currentUser.stripeCustomerId,
+        publishableKey = "pk_live_abc123",
+    ),
+)
+controller.start()
+
+// In a Compose context:
+val state by controller.stateFlow.collectAsState()
+
+// In a View-based context:
+lifecycleScope.launch {
+    controller.stateFlow.collect { state -> /* update UI */ }
+}
+```
+
+Call `controller.dispose()` in `onDestroy` or when the controller is no longer needed.
+
+## Minimum SDK
+
+API 26 (Android 8.0).

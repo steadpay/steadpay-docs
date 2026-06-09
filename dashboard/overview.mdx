@@ -1,0 +1,62 @@
+---
+title: "Dashboard"
+description: "Monitor subscriber billing states, retry history, and webhook delivery logs."
+---
+
+## Accessing the dashboard
+
+Log in at [steadpayhq.com/dashboard](https://steadpayhq.com/dashboard) with your Steadpay account credentials.
+
+## Subscribers
+
+The **Subscribers** tab shows all subscribers Steadpay has seen across your Stripe account.
+
+| Column | Description |
+|--------|-------------|
+| Stripe Customer ID | The `cus_…` identifier from Stripe |
+| Status | Current enforcement status: `active`, `warning`, or `lockout` |
+| Last seen | When Steadpay last received a webhook for this subscriber |
+
+### Subscriber statuses
+
+- **Active** — payment is current, no enforcement in effect
+- **Warning** — a soft decline was received; retry is scheduled and a banner is shown in your app
+- **Lockout** — retries exhausted or hard decline received; subscriber sees the full gate overlay
+
+## Retry log
+
+The **Retry Log** tab shows the retry schedule for each subscriber in warning or lockout state:
+
+- **Day 1** — first retry, 24 hours after the initial decline
+- **Day 3** — second retry
+- **Day 7** — final retry; if this fails the subscriber transitions to lockout
+
+Each retry entry shows the outcome (succeeded / failed) and the Stripe charge attempt ID.
+
+## Webhook delivery log
+
+Available on the **Scale tier**. The **Webhooks** tab shows every downstream webhook delivery attempt, including:
+
+- Event type
+- Delivery status (`pending`, `delivered`, `exhausted`)
+- HTTP response code from your endpoint
+- Attempt count and next scheduled retry
+
+## API keys
+
+Under **Settings → API Keys**:
+
+- View your current **publishable key** (`pk_live_…`)
+- **Rotate** the key — the previous key is invalidated immediately
+- The key is used by the enforcement snippet and all mobile SDKs
+
+## Webhook settings
+
+Under **Settings → Webhooks** (Scale tier):
+
+- Set your **downstream webhook URL** (must be HTTPS)
+- View your **signing secret** for [HMAC verification](/webhooks/hmac-verification)
+
+## Stripe connection
+
+Under **Settings → Stripe**, verify that your Stripe account is connected and your webhook signing secret is up to date. If the signing secret is incorrect, Steadpay will reject incoming Stripe webhook events.

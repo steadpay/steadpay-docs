@@ -1,0 +1,74 @@
+---
+title: "Enforcement Snippet"
+description: "Add one script tag to enforce billing gates across your web app."
+---
+
+## Installation
+
+Add the snippet to every authenticated page — typically inside your app shell's `<body>`, after the user is confirmed to be logged in:
+
+```html
+<script
+  src="https://api.steadpayhq.com/v1/enforce.js"
+  data-tenant-slug="acme"
+  data-publishable-key="pk_live_abc123"
+  data-customer-id="cus_xxxxxxxxxxxxxxxx"
+></script>
+```
+
+On load, the snippet fetches the subscriber's billing status and renders the appropriate UI. No configuration beyond the three required attributes is needed for most integrations.
+
+## Attributes
+
+| Attribute | Required | Description |
+|-----------|----------|-------------|
+| `data-tenant-slug` | ✓ | Your Steadpay tenant slug, visible in the dashboard |
+| `data-publishable-key` | ✓ | Your Steadpay publishable key (`pk_live_…` or `pk_test_…`) |
+| `data-customer-id` | | Stripe customer ID (`cus_…`) for auto-init. If omitted, call `window.Steadpay.check(cid)` manually |
+| `data-api-base` | | Base URL of your Steadpay API. Defaults to the Steadpay-hosted API |
+| `data-gate-base` | | Origin for the gate iframe. Defaults to `data-api-base`. Must be a Steadpay-controlled origin |
+| `data-locale` | | UI locale — `en`, `fr`, `es`, `de`. Defaults to `navigator.language`, fallback `en` |
+
+## Manual init (SPAs)
+
+If your app renders the subscriber's customer ID after the initial page load (e.g. after an auth redirect), omit `data-customer-id` and call `window.Steadpay.check()` manually once the ID is available:
+
+```javascript
+// After the user is authenticated and you have their Stripe customer ID:
+window.Steadpay.check('cus_xxxxxxxxxxxxxxxx')
+```
+
+Call `Steadpay.check()` again any time the signed-in user changes (e.g. account switcher).
+
+## Enforcement behaviour
+
+### Active
+
+No UI is shown. The subscriber's session continues unaffected.
+
+### Warning (soft decline)
+
+A dismissable amber banner appears fixed at the top of the viewport:
+
+- Includes a localized message and an **Update card** CTA if `card_update_url` is configured in your dashboard
+- The subscriber can dismiss the banner, but it reappears on the next page load
+- Polling continues every 10 minutes so the banner disappears automatically once the issue resolves
+
+### Lockout (hard decline or exhausted retries)
+
+A full-screen iframe overlay covers the entire viewport:
+
+- `z-index: 2147483647` — rendered above all app content
+- `sandbox="allow-scripts allow-same-origin allow-popups allow-forms"` — the gate page cannot access parent DOM or storage
+- Contains a Stripe Payment Element for immediate card update
+- Dismisses automatically once the subscriber completes the card update flow
+
+## Polling
+
+After the initial check, the snippet polls the status API every **10 minutes** while the tab is visible. Polling pauses when the tab is hidden and resumes on visibility.
+
+Once a subscriber enters lockout, polling stops and the gate page takes over. After recovery, the snippet goes idle for the remainder of the session.
+
+## Double-load protection
+
+The snippet is guarded against being loaded more than once per page. If the script tag is injected multiple times (e.g. via a tag manager), only the first load takes effect.

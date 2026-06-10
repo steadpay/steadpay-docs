@@ -1,0 +1,62 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "SteadPay",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://steadpayhq.com"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#2563EB",
+    "light": "#60A5FA",
+    "dark": "#1D4ED8"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Sign up",
+        "href": "https://steadpayhq.com/signup"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://steadpayhq.com/dashboard"
+    }
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": ["introduction", "quickstart"]
+      },
+      {
+        "group": "Enforcement Snippet",
+        "pages": ["snippet/overview", "snippet/events"]
+      },
+      {
+        "group": "Mobile SDKs",
+        "pages": ["sdks/react-native", "sdks/flutter", "sdks/swift", "sdks/android"]
+      },
+      {
+        "group": "API Reference",
+        "pages": ["api-reference/authentication", "api-reference/subscriber-status"]
+      },
+      {
+        "group": "Webhooks",
+        "pages": ["webhooks/overview", "webhooks/hmac-verification"]
+      },
+      {
+        "group": "Dashboard",
+        "pages": ["dashboard/overview"]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://twitter.com/steadpayhq"
+    }
+  }
+}

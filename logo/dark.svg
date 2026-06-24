@@ -1,104 +1,11 @@
-<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="160" height="40" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-
-    <!-- Background gradient -->
-    <radialGradient id="bgGrad" cx="38%" cy="32%" r="65%" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#0d2044"/>
-      <stop offset="100%" stop-color="#030712"/>
-    </radialGradient>
-
-    <!-- S letter gradient -->
-    <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#93c5fd"/>
-      <stop offset="100%" stop-color="#2563eb"/>
+    <linearGradient id="mg" x1="0" y1="6" x2="0" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="white"/>
+      <stop offset="100%" stop-color="#FCA5A5"/>
     </linearGradient>
-
-    <!-- Accent line gradient -->
-    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.2"/>
-    </linearGradient>
-
-    <!-- Soft glow on S -->
-    <filter id="sGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <!-- Corner glow -->
-    <radialGradient id="cornerGlow" cx="0%" cy="0%" r="70%" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.07"/>
-      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
-    </radialGradient>
-
   </defs>
-
-  <!-- Background shape -->
-  <rect width="800" height="800" rx="160" fill="#030712"/>
-  <rect width="800" height="800" rx="160" fill="url(#bgGrad)"/>
-
-  <!-- Corner glow overlay -->
-  <rect width="800" height="800" rx="160" fill="url(#cornerGlow)"/>
-
-  <!-- Subtle border ring -->
-  <rect x="1.5" y="1.5" width="797" height="797" rx="158.5"
-    stroke="#1e3a5f" stroke-width="3" fill="none" opacity="0.8"/>
-
-  <!-- Inner subtle border -->
-  <rect x="8" y="8" width="784" height="784" rx="152"
-    stroke="#ffffff" stroke-width="1" fill="none" opacity="0.03"/>
-
-  <!-- Dot grid accent (top right) -->
-  <g opacity="0.07">
-    <circle cx="620" cy="140" r="4" fill="#60a5fa"/>
-    <circle cx="660" cy="140" r="4" fill="#60a5fa"/>
-    <circle cx="700" cy="140" r="4" fill="#60a5fa"/>
-    <circle cx="620" cy="180" r="4" fill="#60a5fa"/>
-    <circle cx="660" cy="180" r="4" fill="#60a5fa"/>
-    <circle cx="700" cy="180" r="4" fill="#60a5fa"/>
-    <circle cx="620" cy="220" r="4" fill="#60a5fa"/>
-    <circle cx="660" cy="220" r="4" fill="#60a5fa"/>
-    <circle cx="700" cy="220" r="4" fill="#60a5fa"/>
-  </g>
-
-  <!-- SP Monogram -->
-  <!-- S — blue gradient with subtle glow -->
-  <text
-    x="224"
-    y="506"
-    font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Arial Black', Arial, sans-serif"
-    font-weight="900"
-    font-size="380"
-    letter-spacing="-4"
-    fill="url(#sGrad)"
-    filter="url(#sGlow)">S</text>
-
-  <!-- P — white -->
-  <text
-    x="412"
-    y="506"
-    font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Arial Black', Arial, sans-serif"
-    font-weight="900"
-    font-size="380"
-    fill="white"
-    opacity="0.95">P</text>
-
-  <!-- Accent line below -->
-  <rect x="200" y="548" width="400" height="10" rx="5" fill="url(#lineGrad)"/>
-
-  <!-- Small "steadpay" wordmark beneath (optional — remove if too small at profile size) -->
-  <text
-    x="400"
-    y="630"
-    text-anchor="middle"
-    font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
-    font-weight="600"
-    font-size="38"
-    letter-spacing="12"
-    fill="white"
-    opacity="0.18">STEADPAY</text>
-
+  <rect width="40" height="40" rx="9" fill="#991B1B"/>
+  <path d="M 20 20 A 7 7 0 0 1 20 6 A 7 7 0 0 1 20 20 A 7 7 0 1 1 14.6 31.5" stroke="url(#mg)" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <text x="52" y="27" font-family="'Bricolage Grotesque', 'Arial Black', Arial, sans-serif" font-weight="800" font-size="19" letter-spacing="-0.6" fill="#FFFFFF">SteadPay</text>
 </svg>

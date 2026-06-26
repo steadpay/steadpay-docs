@@ -5,7 +5,7 @@ description: "Go from zero to live enforcement in under 10 minutes."
 
 ## 1. Create your SteadPay account
 
-[Sign up at steadpayhq.com/signup](https://steadpayhq.com/signup). You'll connect your Stripe account via OAuth during signup.
+[Sign up at app.steadpayhq.com/signup](https://app.steadpayhq.com/signup). You'll connect your Stripe account via OAuth during signup.
 
 ## 2. Get your publishable key
 
@@ -16,7 +16,7 @@ From the SteadPay dashboard, copy your **publishable key** (`pk_live_…`). This
 In your Stripe dashboard, create a webhook endpoint pointing to:
 
 ```
-https://api.steadpayhq.com/webhooks/stripe
+https://api.steadpayhq.com/api/webhooks/stripe
 ```
 
 Subscribe to the `invoice.payment_failed` and `invoice.payment_succeeded` events.

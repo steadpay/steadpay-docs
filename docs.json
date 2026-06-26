@@ -17,13 +17,13 @@
     "links": [
       {
         "label": "Sign up",
-        "href": "https://steadpayhq.com/signup"
+        "href": "https://app.steadpayhq.com/signup"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://steadpayhq.com/dashboard"
+      "href": "https://app.steadpayhq.com/dashboard"
     }
   },
   "navigation": {

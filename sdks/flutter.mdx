@@ -9,20 +9,20 @@ Add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  steadpay_flutter:
+  gatlio_flutter:
     git:
-      url: https://github.com/steadpay/steadpay-flutter.git
+      url: https://github.com/gatlio/gatlio-flutter.git
 ```
 
 ## Quick start
 
-Wrap the authenticated portion of your app in `SteadpayGate`:
+Wrap the authenticated portion of your app in `GatlioGate`:
 
 ```dart
-import 'package:steadpay_flutter/steadpay_flutter.dart';
+import 'package:gatlio_flutter/gatlio_flutter.dart';
 
-SteadpayGate(
-  apiBase: 'https://api.steadpayhq.com',
+GatlioGate(
+  apiBase: 'https://api.gatlio.io',
   tenantSlug: 'acme',
   customerId: currentUser.stripeCustomerId,
   publishableKey: 'pk_live_abc123',
@@ -43,8 +43,8 @@ SteadpayGate(
 | `customerId` | `String` | ✓ | — |
 | `publishableKey` | `String` | ✓ | — |
 | `pollInterval` | `Duration` | | `Duration(minutes: 10)` |
-| `forcedStatus` | `SteadpayStatus?` | | `null` |
-| `callbacks` | `SteadpayCallbacks?` | | `null` |
+| `forcedStatus` | `GatlioStatus?` | | `null` |
+| `callbacks` | `GatlioCallbacks?` | | `null` |
 | `lockoutScreen` | `LockoutScreenBuilder?` | | built-in |
 | `warningBanner` | `WarningBannerBuilder?` | | built-in |
 | `child` | `Widget` | ✓ | — |
@@ -52,12 +52,12 @@ SteadpayGate(
 ## Callbacks
 
 ```dart
-SteadpayGate(
-  apiBase: 'https://api.steadpayhq.com',
+GatlioGate(
+  apiBase: 'https://api.gatlio.io',
   tenantSlug: 'acme',
   customerId: currentUser.stripeCustomerId,
   publishableKey: 'pk_live_abc123',
-  callbacks: SteadpayCallbacks(
+  callbacks: GatlioCallbacks(
     onLockout: () => print('locked out'),
     onWarning: () => print('warning'),
     onActive: () => print('active'),
@@ -73,7 +73,7 @@ Callbacks fire on status **transitions only** — not on every poll tick.
 ## Custom enforcement UI
 
 ```dart
-SteadpayGate(
+GatlioGate(
   // ...
   lockoutScreen: ({required triggerCardUpdate, entitlements}) =>
       MyBrandedLockout(onUpdate: triggerCardUpdate),
@@ -88,12 +88,12 @@ SteadpayGate(
 ### Force a state
 
 ```dart
-SteadpayGate(
-  apiBase: 'https://api.steadpayhq.com',
+GatlioGate(
+  apiBase: 'https://api.gatlio.io',
   tenantSlug: 'acme',
   customerId: 'cus_test',
   publishableKey: 'pk_test_abc',
-  forcedStatus: SteadpayStatus.lockout,
+  forcedStatus: GatlioStatus.lockout,
   child: YourApp(),
 )
 ```
@@ -103,7 +103,7 @@ No network calls are made when `forcedStatus` is set. Remove before shipping.
 ### Interactive sandbox
 
 ```dart
-SteadpaySandbox(
+GatlioSandbox(
   onLockout: () => print('locked out'),
   onWarning: () => print('warning'),
   onActive: () => print('active'),
@@ -119,9 +119,9 @@ A `DEV` badge appears in the bottom-right corner. Tap to open a control sheet wi
 For custom state management with Riverpod, Bloc, or other state managers:
 
 ```dart
-final controller = SteadpayController(
-  SteadpayConfig(
-    apiBase: 'https://api.steadpayhq.com',
+final controller = GatlioController(
+  GatlioConfig(
+    apiBase: 'https://api.gatlio.io',
     tenantSlug: 'acme',
     customerId: currentUser.stripeCustomerId,
     publishableKey: 'pk_live_abc123',
@@ -129,7 +129,7 @@ final controller = SteadpayController(
 )
 controller.start()
 
-StreamBuilder<SteadpayState>(
+StreamBuilder<GatlioState>(
   stream: controller.stateStream,
   builder: (context, snap) { /* ... */ },
 )

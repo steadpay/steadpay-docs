@@ -1,11 +1,12 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "SteadPay",
+  "name": "Gatlio",
+  "url": "docs.gatlio.io",
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg",
-    "href": "https://steadpayhq.com"
+    "href": "https://gatlio.io"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -17,13 +18,13 @@
     "links": [
       {
         "label": "Sign up",
-        "href": "https://app.steadpayhq.com/signup"
+        "href": "https://app.gatlio.io/signup"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://app.steadpayhq.com/dashboard"
+      "href": "https://app.gatlio.io/dashboard"
     }
   },
   "navigation": {
@@ -56,7 +57,7 @@
   },
   "footer": {
     "socials": {
-      "x": "https://twitter.com/steadpayhq"
+      "x": "https://twitter.com/gatlio_io"
     }
   }
 }

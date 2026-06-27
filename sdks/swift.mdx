@@ -10,38 +10,38 @@ description: "Native billing enforcement for SwiftUI apps — supports iOS 15+ a
 In Xcode: **File → Add Packages**, then enter:
 
 ```
-https://github.com/steadpay/steadpay-swift
+https://github.com/gatlio/gatlio-swift
 ```
 
 Or in `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/steadpay/steadpay-swift.git", from: "1.0.0")
+.package(url: "https://github.com/gatlio/gatlio-swift.git", from: "1.0.0")
 ```
 
-Add `SteadpayUI` as a target dependency (and optionally `Steadpay` for direct client usage):
+Add `GatlioUI` as a target dependency (and optionally `Gatlio` for direct client usage):
 
 ```swift
 .target(
     name: "YourApp",
     dependencies: [
-        .product(name: "SteadpayUI", package: "steadpay-swift"),
+        .product(name: "GatlioUI", package: "gatlio-swift"),
     ]
 )
 ```
 
 ## Quick start
 
-Wrap the authenticated portion of your app in `SteadpayGate`:
+Wrap the authenticated portion of your app in `GatlioGate`:
 
 ```swift
-import SteadpayUI
+import GatlioUI
 
-SteadpayGate(
+GatlioGate(
     tenantSlug: "acme",
     customerId: currentUser.stripeCustomerId,
     publishableKey: "pk_live_abc123",
-    apiBase: "https://api.steadpayhq.com"
+    apiBase: "https://api.gatlio.io"
 ) {
     YourApp()
 }
@@ -60,8 +60,8 @@ SteadpayGate(
 | `publishableKey` | `String` | ✓ | — |
 | `apiBase` | `String` | ✓ | — |
 | `pollInterval` | `TimeInterval` | | `600` |
-| `forcedStatus` | `SteadpayStatus?` | | `nil` |
-| `callbacks` | `SteadpayCallbacks?` | | `nil` |
+| `forcedStatus` | `GatlioStatus?` | | `nil` |
+| `callbacks` | `GatlioCallbacks?` | | `nil` |
 | `lockoutScreen` | `((@escaping () -> Void, Entitlements?) -> AnyView)?` | | built-in |
 | `warningBanner` | `((@escaping () -> Void, @escaping () -> Void) -> AnyView)?` | | built-in |
 | `content` | `@ViewBuilder` | ✓ | — |
@@ -69,12 +69,12 @@ SteadpayGate(
 ## Callbacks
 
 ```swift
-SteadpayGate(
+GatlioGate(
     tenantSlug: "acme",
     customerId: currentUser.stripeCustomerId,
     publishableKey: "pk_live_abc123",
-    apiBase: "https://api.steadpayhq.com",
-    callbacks: SteadpayCallbacks(
+    apiBase: "https://api.gatlio.io",
+    callbacks: GatlioCallbacks(
         onLockout: { print("locked out") },
         onWarning: { print("warning") },
         onActive: { print("active") },
@@ -93,7 +93,7 @@ Callbacks fire on status **transitions only**.
 Wrap your views in `AnyView(...)`:
 
 ```swift
-SteadpayGate(
+GatlioGate(
     // ...
     lockoutScreen: { triggerCardUpdate, _ in
         AnyView(MyBrandedLockout(onUpdate: triggerCardUpdate))
@@ -111,11 +111,11 @@ SteadpayGate(
 ### Force a state
 
 ```swift
-SteadpayGate(
+GatlioGate(
     tenantSlug: "acme",
     customerId: "cus_test",
     publishableKey: "pk_test_abc",
-    apiBase: "https://api.steadpayhq.com",
+    apiBase: "https://api.gatlio.io",
     forcedStatus: .lockout
 ) {
     YourApp()
@@ -127,9 +127,9 @@ No network calls are made when `forcedStatus` is set. Remove before shipping.
 ### Interactive sandbox
 
 ```swift
-import SteadpayUI
+import GatlioUI
 
-SteadpaySandbox(
+GatlioSandbox(
     onLockout: { print("locked out") },
     onWarning: { print("warning") },
     onActive: { print("active") },
@@ -143,14 +143,14 @@ A `DEV` badge appears in the bottom-right corner. Tap to open a sheet with state
 
 ## UIKit / non-SwiftUI usage
 
-Use the `Steadpay` target directly with Combine:
+Use the `Gatlio` target directly with Combine:
 
 ```swift
-import Steadpay
+import Gatlio
 
-let client = SteadpayClient(
-    config: SteadpayConfig(
-        apiBase: "https://api.steadpayhq.com",
+let client = GatlioClient(
+    config: GatlioConfig(
+        apiBase: "https://api.gatlio.io",
         tenantSlug: "acme",
         customerId: currentUser.stripeCustomerId,
         publishableKey: "pk_live_abc123"

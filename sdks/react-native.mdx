@@ -6,28 +6,28 @@ description: "Native billing enforcement for React Native apps — no WebView, n
 ## Installation
 
 ```sh
-npm install steadpay-react-native
+npm install gatlio-react-native
 ```
 
 No native module linking required. The package uses only React Native core components and the built-in `fetch` API.
 
 ## Quick start
 
-Wrap the authenticated portion of your app in `<SteadpayGate>`:
+Wrap the authenticated portion of your app in `<GatlioGate>`:
 
 ```tsx
-import { SteadpayGate } from 'steadpay-react-native'
+import { GatlioGate } from 'gatlio-react-native'
 
 export function App() {
   return (
-    <SteadpayGate
-      apiBase="https://api.steadpayhq.com"
+    <GatlioGate
+      apiBase="https://api.gatlio.io"
       tenantSlug="acme"
       customerId={currentUser.stripeCustomerId}
       publishableKey="pk_live_abc123"
     >
       <YourApp />
-    </SteadpayGate>
+    </GatlioGate>
   )
 }
 ```
@@ -36,15 +36,15 @@ export function App() {
 - **Warning** — a dismissable banner appears above content
 - **Lockout** — a full-screen overlay replaces all content until card is updated
 
-## `<SteadpayGate>` props
+## `<GatlioGate>` props
 
 ```typescript
-interface SteadpayGateProps {
+interface GatlioGateProps {
   // Required
   apiBase: string
   tenantSlug: string
   customerId: string        // Stripe customer ID (cus_…)
-  publishableKey: string    // Steadpay publishable key
+  publishableKey: string    // Gatlio publishable key
 
   // Optional
   pollInterval?: number     // ms, default 600_000 (10 min), minimum 60_000
@@ -74,16 +74,16 @@ interface SteadpayGateProps {
 | `lockout` | No | Full-screen lockout |
 | `error` | Yes | None (fail-open) |
 
-## `useSteadpay` hook
+## `useGatlio` hook
 
 Use the hook directly for custom UI or state management:
 
 ```tsx
-import { useSteadpay } from 'steadpay-react-native'
+import { useGatlio } from 'gatlio-react-native'
 
 function MyScreen() {
-  const { status, cardUpdateUrl, triggerCardUpdate, dismissWarning } = useSteadpay({
-    apiBase: 'https://api.steadpayhq.com',
+  const { status, cardUpdateUrl, triggerCardUpdate, dismissWarning } = useGatlio({
+    apiBase: 'https://api.gatlio.io',
     tenantSlug: 'acme',
     customerId: currentUser.stripeCustomerId,
     publishableKey: 'pk_live_abc123',
@@ -114,13 +114,13 @@ Every config change triggers a full reset. Pass a stable object or memoize:
 
 ```tsx
 const config = useMemo(() => ({
-  apiBase: 'https://api.steadpayhq.com',
+  apiBase: 'https://api.gatlio.io',
   tenantSlug: 'acme',
   customerId: user.stripeCustomerId,
   publishableKey: 'pk_live_abc123',
 }), [user.stripeCustomerId])
 
-const state = useSteadpay(config)
+const state = useGatlio(config)
 ```
 
 ## Callbacks
@@ -138,36 +138,36 @@ const state = useSteadpay(config)
 ### Force a state
 
 ```tsx
-<SteadpayGate {...config} forcedStatus="lockout">
+<GatlioGate {...config} forcedStatus="lockout">
   <App />
-</SteadpayGate>
+</GatlioGate>
 ```
 
 No network calls are made when `forcedStatus` is set. Remove before shipping.
 
 ### Interactive sandbox
 
-`<SteadpaySandbox>` lets you switch states without a real SteadPay account:
+`<GatlioSandbox>` lets you switch states without a real Gatlio account:
 
 ```tsx
-import { SteadpaySandbox } from 'steadpay-react-native'
+import { GatlioSandbox } from 'gatlio-react-native'
 
 export function DevScreen() {
   return (
-    <SteadpaySandbox
+    <GatlioSandbox
       onLockout={(id) => console.log('locked out:', id)}
       onWarning={(id) => console.log('warning:', id)}
       onActive={(id) => console.log('active:', id)}
     >
       <YourApp />
-    </SteadpaySandbox>
+    </GatlioSandbox>
   )
 }
 ```
 
 A `DEV` badge appears in the bottom-right corner. Tap it to open a control sheet with state pills and a callback log.
 
-Remove `<SteadpaySandbox>` before shipping to production.
+Remove `<GatlioSandbox>` before shipping to production.
 
 ## TypeScript
 
@@ -175,9 +175,9 @@ All types are exported from the package root:
 
 ```typescript
 import type {
-  SteadpayConfig,
-  SteadpayState,
-  SteadpayStatus,
-  SteadpayGateProps,
-} from 'steadpay-react-native'
+  GatlioConfig,
+  GatlioState,
+  GatlioStatus,
+  GatlioGateProps,
+} from 'gatlio-react-native'
 ```

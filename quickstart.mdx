@@ -3,25 +3,25 @@ title: "Quickstart"
 description: "Go from zero to live enforcement in under 10 minutes."
 ---
 
-## 1. Create your SteadPay account
+## 1. Create your Gatlio account
 
-[Sign up at app.steadpayhq.com/signup](https://app.steadpayhq.com/signup). You'll connect your Stripe account via OAuth during signup.
+[Sign up at app.gatlio.io/signup](https://app.gatlio.io/signup). You'll connect your Stripe account via OAuth during signup.
 
 ## 2. Get your publishable key
 
-From the SteadPay dashboard, copy your **publishable key** (`pk_live_…`). This key is safe to embed in client-side code.
+From the Gatlio dashboard, copy your **publishable key** (`pk_live_…`). This key is safe to embed in client-side code.
 
 ## 3. Register your Stripe webhook
 
 In your Stripe dashboard, create a webhook endpoint pointing to:
 
 ```
-https://api.steadpayhq.com/api/webhooks/stripe
+https://api.gatlio.io/api/webhooks/stripe
 ```
 
 Subscribe to the `invoice.payment_failed` and `invoice.payment_succeeded` events.
 
-Copy the **signing secret** (`whsec_…`) and paste it into the SteadPay dashboard under **Settings → Stripe**.
+Copy the **signing secret** (`whsec_…`) and paste it into the Gatlio dashboard under **Settings → Stripe**.
 
 ## 4. Add the enforcement snippet
 
@@ -29,7 +29,7 @@ Paste this into every authenticated page of your web app, replacing the placehol
 
 ```html
 <script
-  src="https://api.steadpayhq.com/v1/enforce.js"
+  src="https://api.gatlio.io/v1/enforce.js"
   data-tenant-slug="YOUR_TENANT_SLUG"
   data-publishable-key="pk_live_YOUR_KEY"
   data-customer-id="cus_SUBSCRIBER_STRIPE_ID"
@@ -44,7 +44,7 @@ The snippet runs immediately on page load, checks the subscriber's billing statu
 
 ## 5. Verify it works
 
-In your SteadPay dashboard, navigate to **Subscribers** and find your test subscriber. Use the **Force status** control to set them to `lockout` — reload the page in your app and confirm the gate overlay appears.
+In your Gatlio dashboard, navigate to **Subscribers** and find your test subscriber. Use the **Force status** control to set them to `lockout` — reload the page in your app and confirm the gate overlay appears.
 
 ---
 

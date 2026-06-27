@@ -7,5 +7,5 @@
   </defs>
   <rect width="40" height="40" rx="9" fill="#991B1B"/>
   <path d="M 20 20 A 7 7 0 0 1 20 6 A 7 7 0 0 1 20 20 A 7 7 0 1 1 13.7 30.0" stroke="url(#mg)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-  <text x="52" y="27" font-family="'Bricolage Grotesque', 'Arial Black', Arial, sans-serif" font-weight="800" font-size="19" letter-spacing="-0.6" fill="#FFFFFF">SteadPay</text>
+  <text x="52" y="27" font-family="'Bricolage Grotesque', 'Arial Black', Arial, sans-serif" font-weight="800" font-size="19" letter-spacing="-0.6" fill="#FFFFFF">Gatlio</text>
 </svg>

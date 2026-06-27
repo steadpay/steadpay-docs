@@ -1,21 +1,21 @@
 ---
 title: "HMAC Verification"
-description: "Verify that webhook deliveries genuinely came from SteadPay."
+description: "Verify that webhook deliveries genuinely came from Gatlio."
 ---
 
-Every downstream webhook delivery includes an `X-Steadpay-Signature` header. Verify this signature before processing the payload to ensure the request is authentic and the body has not been tampered with.
+Every downstream webhook delivery includes an `X-Gatlio-Signature` header. Verify this signature before processing the payload to ensure the request is authentic and the body has not been tampered with.
 
 ## Signature format
 
 ```
-X-Steadpay-Signature: sha256=<hex-encoded-hmac>
+X-Gatlio-Signature: sha256=<hex-encoded-hmac>
 ```
 
 The signature is `HMAC-SHA256` of the **raw request body**, keyed with your per-tenant webhook signing secret.
 
 ## Getting your signing secret
 
-In the SteadPay dashboard, go to **Settings → Webhooks**. Your signing secret is displayed alongside your webhook URL.
+In the Gatlio dashboard, go to **Settings → Webhooks**. Your signing secret is displayed alongside your webhook URL.
 
 ## Verification example
 
@@ -37,9 +37,9 @@ function verifySignature(rawBody, signatureHeader, secret) {
 }
 
 // Express — use express.raw() to preserve the raw body
-app.post('/webhooks/steadpay', express.raw({ type: 'application/json' }), (req, res) => {
-  const sig = req.headers['x-steadpay-signature']
-  if (!verifySignature(req.body, sig, process.env.STEADPAY_WEBHOOK_SECRET)) {
+app.post('/webhooks/gatlio', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['x-gatlio-signature']
+  if (!verifySignature(req.body, sig, process.env.GATLIO_WEBHOOK_SECRET)) {
     return res.status(400).send('Invalid signature')
   }
 
@@ -62,10 +62,10 @@ def verify_signature(raw_body: bytes, signature_header: str, secret: str) -> boo
     return hmac.compare_digest(signature_header, expected)
 
 # Flask example
-@app.route('/webhooks/steadpay', methods=['POST'])
-def steadpay_webhook():
-    sig = request.headers.get('X-Steadpay-Signature', '')
-    if not verify_signature(request.data, sig, os.environ['STEADPAY_WEBHOOK_SECRET']):
+@app.route('/webhooks/gatlio', methods=['POST'])
+def gatlio_webhook():
+    sig = request.headers.get('X-Gatlio-Signature', '')
+    if not verify_signature(request.data, sig, os.environ['GATLIO_WEBHOOK_SECRET']):
         return 'Invalid signature', 400
 
     payload = request.get_json()
@@ -95,4 +95,4 @@ func verifySignature(rawBody []byte, signatureHeader, secret string) bool {
 
 - **Use the raw body** — compute the HMAC over the raw request bytes before any JSON parsing. Parsing and re-serializing will change whitespace and may break the signature.
 - **Use a constant-time comparison** (`timingSafeEqual` / `hmac.compare_digest` / `hmac.Equal`) to prevent timing attacks.
-- **No timestamp in the signature** — SteadPay signs the body only, not a timestamp. Use `occurred_at` in the payload for event ordering if needed.
+- **No timestamp in the signature** — Gatlio signs the body only, not a timestamp. Use `occurred_at` in the payload for event ordering if needed.

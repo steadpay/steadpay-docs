@@ -1,11 +1,11 @@
 ---
 title: "Introduction"
-description: "SteadPay keeps your recurring revenue steady by catching failed payments at the highest-intent moment — when your subscriber is already inside your app."
+description: "Gatlio keeps your recurring revenue steady by catching failed payments at the highest-intent moment — when your subscriber is already inside your app."
 ---
 
-## What is SteadPay?
+## What is Gatlio?
 
-SteadPay is a billing enforcement layer for Stripe-powered SaaS products. When a subscriber's payment fails, SteadPay intercepts their next login with a non-bypassable overlay that requires them to update their card before continuing.
+Gatlio is a billing enforcement layer for Stripe-powered SaaS products. When a subscriber's payment fails, Gatlio intercepts their next login with a non-bypassable overlay that requires them to update their card before continuing.
 
 No emails. No grace periods. No revenue leakage.
 
@@ -13,12 +13,12 @@ No emails. No grace periods. No revenue leakage.
 
 <Steps>
   <Step title="Stripe sends a webhook">
-    When a payment fails, Stripe fires an `invoice.payment_failed` event to SteadPay. SteadPay classifies it as a **soft decline** (retriable) or **hard decline** (card rejected outright) and updates the subscriber's status accordingly.
+    When a payment fails, Stripe fires an `invoice.payment_failed` event to Gatlio. Gatlio classifies it as a **soft decline** (retriable) or **hard decline** (card rejected outright) and updates the subscriber's status accordingly.
   </Step>
   <Step title="Your app checks the subscriber's status">
-    On every authenticated session, your enforcement snippet (or mobile SDK) calls the SteadPay status API with the subscriber's Stripe customer ID.
+    On every authenticated session, your enforcement snippet (or mobile SDK) calls the Gatlio status API with the subscriber's Stripe customer ID.
   </Step>
-  <Step title="SteadPay enforces the gate">
+  <Step title="Gatlio enforces the gate">
     - **Active** — nothing shown, subscriber continues normally.
     - **Warning** — a dismissable banner prompts the subscriber to update their card.
     - **Lockout** — a full-screen overlay prevents all app access until the card is updated.
@@ -30,7 +30,7 @@ No emails. No grace periods. No revenue leakage.
 
 ## Enforcement surfaces
 
-SteadPay provides four ways to integrate — pick the one that matches your stack:
+Gatlio provides four ways to integrate — pick the one that matches your stack:
 
 | Surface | Best for |
 |---------|----------|
@@ -43,5 +43,5 @@ SteadPay provides four ways to integrate — pick the one that matches your stac
 ## Prerequisites
 
 - A Stripe account in live mode
-- SteadPay account ([sign up here](https://app.steadpayhq.com/signup))
+- Gatlio account ([sign up here](https://app.gatlio.io/signup))
 - Your subscriber's `stripe_customer_id` available at login time

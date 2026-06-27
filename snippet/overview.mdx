@@ -9,7 +9,7 @@ Add the snippet to every authenticated page — typically inside your app shell'
 
 ```html
 <script
-  src="https://api.steadpayhq.com/v1/enforce.js"
+  src="https://api.gatlio.io/v1/enforce.js"
   data-tenant-slug="acme"
   data-publishable-key="pk_live_abc123"
   data-customer-id="cus_xxxxxxxxxxxxxxxx"
@@ -22,23 +22,23 @@ On load, the snippet fetches the subscriber's billing status and renders the app
 
 | Attribute | Required | Description |
 |-----------|----------|-------------|
-| `data-tenant-slug` | ✓ | Your SteadPay tenant slug, visible in the dashboard |
-| `data-publishable-key` | ✓ | Your SteadPay publishable key (`pk_live_…` or `pk_test_…`) |
-| `data-customer-id` | | Stripe customer ID (`cus_…`) for auto-init. If omitted, call `window.Steadpay.check(cid)` manually |
-| `data-api-base` | | Base URL of your SteadPay API. Defaults to the SteadPay-hosted API |
-| `data-gate-base` | | Origin for the gate iframe. Defaults to `data-api-base`. Must be a SteadPay-controlled origin |
+| `data-tenant-slug` | ✓ | Your Gatlio tenant slug, visible in the dashboard |
+| `data-publishable-key` | ✓ | Your Gatlio publishable key (`pk_live_…` or `pk_test_…`) |
+| `data-customer-id` | | Stripe customer ID (`cus_…`) for auto-init. If omitted, call `window.Gatlio.check(cid)` manually |
+| `data-api-base` | | Base URL of your Gatlio API. Defaults to the Gatlio-hosted API |
+| `data-gate-base` | | Origin for the gate iframe. Defaults to `data-api-base`. Must be a Gatlio-controlled origin |
 | `data-locale` | | UI locale — `en`, `fr`, `es`, `de`. Defaults to `navigator.language`, fallback `en` |
 
 ## Manual init (SPAs)
 
-If your app renders the subscriber's customer ID after the initial page load (e.g. after an auth redirect), omit `data-customer-id` and call `window.Steadpay.check()` manually once the ID is available:
+If your app renders the subscriber's customer ID after the initial page load (e.g. after an auth redirect), omit `data-customer-id` and call `window.Gatlio.check()` manually once the ID is available:
 
 ```javascript
 // After the user is authenticated and you have their Stripe customer ID:
-window.Steadpay.check('cus_xxxxxxxxxxxxxxxx')
+window.Gatlio.check('cus_xxxxxxxxxxxxxxxx')
 ```
 
-Call `Steadpay.check()` again any time the signed-in user changes (e.g. account switcher).
+Call `Gatlio.check()` again any time the signed-in user changes (e.g. account switcher).
 
 ## Enforcement behaviour
 

@@ -24,6 +24,7 @@ Returns the current billing enforcement status for a subscriber. This is the sam
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `stripe_customer_id` | ✓ | The subscriber's Stripe customer ID (`cus_…`) |
+| `hmac` | | `HMAC-SHA256(hmacSecret, stripe_customer_id)`. Strongly recommended in production — prevents a client from spoofing another subscriber's customer ID |
 
 ### Headers
 

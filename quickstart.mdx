@@ -19,7 +19,13 @@ In your Stripe dashboard, create a webhook endpoint pointing to:
 https://api.gatlio.io/api/webhooks/stripe
 ```
 
-Subscribe to the `invoice.payment_failed` and `invoice.payment_succeeded` events.
+Subscribe to these events:
+
+- `invoice.payment_failed`
+- `invoice.paid`
+- `setup_intent.succeeded`
+- `account.updated`
+- `account.application.deauthorized`
 
 Copy the **signing secret** (`whsec_…`) and paste it into the Gatlio dashboard under **Settings → Stripe**.
 
@@ -33,11 +39,12 @@ Paste this into every authenticated page of your web app, replacing the placehol
   data-tenant-slug="YOUR_TENANT_SLUG"
   data-publishable-key="pk_live_YOUR_KEY"
   data-customer-id="cus_SUBSCRIBER_STRIPE_ID"
+  data-hmac="HMAC_SHA256_OF_CUSTOMER_ID"
 ></script>
 ```
 
 <Note>
-  `data-customer-id` is the currently signed-in subscriber's Stripe customer ID. Render it server-side as part of your HTML.
+  Render this tag server-side. `data-customer-id` is the signed-in subscriber's Stripe customer ID. `data-hmac` is `HMAC-SHA256(hmacSecret, stripe_customer_id)` — compute it server-side using your HMAC secret from the Gatlio dashboard. Never expose the HMAC secret to the client.
 </Note>
 
 The snippet runs immediately on page load, checks the subscriber's billing status, and shows the appropriate UI automatically.

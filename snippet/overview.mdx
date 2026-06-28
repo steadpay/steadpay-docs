@@ -13,10 +13,11 @@ Add the snippet to every authenticated page — typically inside your app shell'
   data-tenant-slug="acme"
   data-publishable-key="pk_live_abc123"
   data-customer-id="cus_xxxxxxxxxxxxxxxx"
+  data-hmac="SERVER_GENERATED_HMAC"
 ></script>
 ```
 
-On load, the snippet fetches the subscriber's billing status and renders the appropriate UI. No configuration beyond the three required attributes is needed for most integrations.
+On load, the snippet fetches the subscriber's billing status and renders the appropriate UI. Render this tag server-side — `data-hmac` must be generated on the server using your HMAC secret, never in client-side code.
 
 ## Attributes
 
@@ -24,7 +25,8 @@ On load, the snippet fetches the subscriber's billing status and renders the app
 |-----------|----------|-------------|
 | `data-tenant-slug` | ✓ | Your Gatlio tenant slug, visible in the dashboard |
 | `data-publishable-key` | ✓ | Your Gatlio publishable key (`pk_live_…` or `pk_test_…`) |
-| `data-customer-id` | | Stripe customer ID (`cus_…`) for auto-init. If omitted, call `window.Gatlio.check(cid)` manually |
+| `data-customer-id` | | Stripe customer ID (`cus_…`) for auto-init. If omitted, call `window.Gatlio.check(cid, hmac)` manually |
+| `data-hmac` | | `HMAC-SHA256(hmacSecret, stripe_customer_id)` — generated server-side. Strongly recommended in production to prevent customer ID spoofing |
 | `data-api-base` | | Base URL of your Gatlio API. Defaults to the Gatlio-hosted API |
 | `data-gate-base` | | Origin for the gate iframe. Defaults to `data-api-base`. Must be a Gatlio-controlled origin |
 | `data-locale` | | UI locale — `en`, `fr`, `es`, `de`. Defaults to `navigator.language`, fallback `en` |
@@ -34,11 +36,11 @@ On load, the snippet fetches the subscriber's billing status and renders the app
 If your app renders the subscriber's customer ID after the initial page load (e.g. after an auth redirect), omit `data-customer-id` and call `window.Gatlio.check()` manually once the ID is available:
 
 ```javascript
-// After the user is authenticated and you have their Stripe customer ID:
-window.Gatlio.check('cus_xxxxxxxxxxxxxxxx')
+// After the user is authenticated and you have their Stripe customer ID and HMAC:
+window.Gatlio.check('cus_xxxxxxxxxxxxxxxx', 'server_generated_hmac')
 ```
 
-Call `Gatlio.check()` again any time the signed-in user changes (e.g. account switcher).
+Call `Gatlio.check()` again any time the signed-in user changes (e.g. account switcher). Always pass the HMAC alongside the customer ID.
 
 ## Enforcement behaviour
 
